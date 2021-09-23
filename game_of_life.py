@@ -11,9 +11,9 @@ def create_rec(lst):
         for y in range(len(lst[0])):
 
             if lst[x][y] == 1:
-                pygame.draw.rect(fenster, (244, 244, 244), pygame.Rect(x*10, y*10, 10, 10))
+                pygame.draw.rect(fenster, (244, 244, 244), pygame.Rect(x*5, y*5, 5, 5), width=1)
             else:
-                pygame.draw.rect(fenster, (0, 0, 0), pygame.Rect(x*10, y*10, 10, 10))
+                pygame.draw.rect(fenster, (0, 0, 0), pygame.Rect(x*5, y*5, 5, 5), width = 1)
 
     pygame.display.update()
 
@@ -86,9 +86,9 @@ def update_grid(lst):
 
 clock = pygame.time.Clock()
 running = True
-display_list = [[randint(0,1) for x in range(108)] for x in range(108)]
+display_list = [[randint(0,1) for x in range(216)] for x in range(216)]
 while running:
-    clock.tick(250)
+    clock.tick(10)
     create_rec(display_list)
     display_list = update_grid(display_list)
     for event in pygame.event.get():
