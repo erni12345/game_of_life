@@ -6,91 +6,92 @@ fenster.fill((100,100,100))
 
 
 
-def create_rec(lst):
-    for x in range(len(lst)):
-        for y in range(len(lst[0])):
+class Node:
 
-            if lst[x][y] == 1:
-                pygame.draw.rect(fenster, (244, 244, 244), pygame.Rect(x*5, y*5, 5, 5), width=1)
-            else:
-                pygame.draw.rect(fenster, (0, 0, 0), pygame.Rect(x*5, y*5, 5, 5), width = 1)
+    def __init__(self, x, y):
 
-    pygame.display.update()
-
- 
+        self.x = x
+        self.y = y
+        self.color = (0, 0, 0)
+        self.value = 0
 
 
+
+
+class Board:
+
+    def __init__(self , rows , columns):
+        self._rows = rows
+        self._columns = columns   
+        self._grid = [[Node(row_cells,column_cells) for column_cells in range(self._columns)] for row_cells in range(self._rows)]
+
+        self._generate_board()
+
+    def draw_board(self):
+        for x in range(self._rows):
+            for y in range(self._columns):
+                pygame.draw.rect(fenster, self._grid[x][y].color, pygame.Rect(x*15, y*15, 15, 15))
+
+        pygame.display.update()
+
+
+    def _generate_board(self):
+        for row in self._grid:
+            for column in row:
+                chance_number = randint(0,12)
+                if chance_number == 1:
+                    column.color = (244, 244, 244)
+                    column.value = 1
+
+
+    def check_status(self):
+        
+        grid = self._grid.copy()
+        amount_of_neighbours = 0
+
+        for i in range(self._rows):
+            for j in range(self._columns):
     
-    
-def check_status(lst, x, y):
-    
-    amount_of_neighbours = 0
-
-    if x > 0:
-        if lst[x-1][y] == 1:
-            amount_of_neighbours += 1
-    if x < len(lst)-1:
-        if lst[x+1][y] == 1:
-            amount_of_neighbours += 1
-    if y > 0:
-        if lst[x][y-1] == 1:
-            amount_of_neighbours += 1
-    if y < len(lst[0])-1:
-        if lst[x][y+1]== 1:
-            amount_of_neighbours += 1
-    if x > 0 and y < len(lst[0])-1:
-        if lst[x-1][y+1]== 1:
-            amount_of_neighbours += 1
-    if x > 0 and y > 0:
-        if lst[x-1][y-1]== 1:
-            amount_of_neighbours += 1
-    if x < len(lst)-1 and y < len(lst[0])-1:
-        if lst[x+1][y+1]== 1:
-            amount_of_neighbours += 1
-    if x < len(lst)-1 and y > 0:
-        if lst[x+1][y-1]== 1:
-            amount_of_neighbours += 1
-    
-    
-
-
-    check_dic_1 = {0:False, 1: False, 2:True, 3:True, 4:False,5:False,6:False,7:False,8:False,}
-    if lst[x][y] == 1:
-        return check_dic_1[amount_of_neighbours]
-    else:
-        if amount_of_neighbours == 3:
-            return True
-        else:
-            return False
+                total = int(grid[i][(j-1)%self._columns].value + grid[i][(j+1)%self._columns].value +
+                            grid[(i-1)%self._rows][j].value + grid[(i+1)%self._rows][j].value +
+                            grid[(i-1)%self._rows][(j-1)%self._columns].value + grid[(i-1)%self._rows][(j+1)%self._columns].value +
+                            grid[(i+1)%self._rows][(j-1)%self._columns].value + grid[(i+1)%self._rows][(j+1)%self._columns].value)
+        
         
 
 
+                if grid[i][j].value == 1:
+                    if (total < 2) or (total > 3):
+                        self._grid[i][j].value = 0
+                        self._grid[i][j].color = (0, 0, 0)
+                else:
+                    if total == 3:
+                        self._grid[i][j].value = 1
+                        self._grid[i][j].color = (244, 244, 244)
+       
+    
+  
+    
 
-def update_grid(lst):
-
-    og = [[x for x in y] for y in lst]
-
-    for x in range(len(lst)):
-        for y in range(len(lst)):
-            if check_status(og, x, y):
-                lst[x][y] = 1
-            else:
-                lst[x][y] = 0
-    return lst
     
     
     
-
-
 
 
 clock = pygame.time.Clock()
 running = True
-display_list = [[randint(0,1) for x in range(216)] for x in range(216)]
+board = Board(128, 72)
+paused = False
 while running:
-    clock.tick(10)
-    create_rec(display_list)
-    display_list = update_grid(display_list)
+
+    if not paused:
+        clock.tick(10)
+        board.draw_board()
+        board.check_status()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                pygame.display.set_caption("Paused")
+                paused = not paused
