@@ -30,7 +30,7 @@ class Board:
     def draw_board(self):
         for x in range(self._rows):
             for y in range(self._columns):
-                pygame.draw.rect(fenster, self._grid[x][y].color, pygame.Rect(x*15, y*15, 15, 15))
+                pygame.draw.rect(fenster, self._grid[x][y].color, pygame.Rect(x*5, y*5, 5, 5))
 
         pygame.display.update()
 
@@ -38,7 +38,7 @@ class Board:
     def _generate_board(self):
         for row in self._grid:
             for column in row:
-                chance_number = randint(0,12)
+                chance_number = randint(0,10)
                 if chance_number == 1:
                     column.color = (244, 244, 244)
                     column.value = 1
@@ -52,10 +52,10 @@ class Board:
         for i in range(self._rows):
             for j in range(self._columns):
     
-                total = int(grid[i][(j-1)%self._columns].value + grid[i][(j+1)%self._columns].value +
-                            grid[(i-1)%self._rows][j].value + grid[(i+1)%self._rows][j].value +
-                            grid[(i-1)%self._rows][(j-1)%self._columns].value + grid[(i-1)%self._rows][(j+1)%self._columns].value +
-                            grid[(i+1)%self._rows][(j-1)%self._columns].value + grid[(i+1)%self._rows][(j+1)%self._columns].value)
+                total = grid[i][(j-1)%self._columns].value \
+                    + grid[i][(j+1)%self._columns].value + grid[(i-1)%self._rows][j].value + grid[(i+1)%self._rows][j].value \
+                    + grid[(i-1)%self._rows][(j-1)%self._columns].value + grid[(i-1)%self._rows][(j+1)%self._columns].value \
+                    + grid[(i+1)%self._rows][(j-1)%self._columns].value + grid[(i+1)%self._rows][(j+1)%self._columns].value
         
         
 
@@ -80,7 +80,7 @@ class Board:
 
 clock = pygame.time.Clock()
 running = True
-board = Board(128, 72)
+board = Board(384, 216)
 paused = False
 while running:
 
