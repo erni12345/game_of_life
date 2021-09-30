@@ -14,7 +14,7 @@ class Node:
         self.y = y
         self.color = (0, 0, 0)
         self.value = 0
-
+        self.age = 0
 
 
 
@@ -26,11 +26,12 @@ class Board:
         self._grid = [[Node(row_cells,column_cells) for column_cells in range(self._columns)] for row_cells in range(self._rows)]
 
         self._generate_board()
+        
 
     def draw_board(self):
         for x in range(self._rows):
             for y in range(self._columns):
-                pygame.draw.rect(fenster, self._grid[x][y].color, pygame.Rect(x*5, y*5, 5, 5))
+                pygame.draw.rect(fenster, self._grid[x][y].color, pygame.Rect(1000 + (10*x), 200 + (10*y), 10, 10))
 
         pygame.display.update()
 
@@ -51,21 +52,32 @@ class Board:
 
         for i in range(self._rows):
             for j in range(self._columns):
-    
-                total = grid[i][(j-1)%self._columns].value \
+                
+                if self._grid[i][j].value == 1:
+                    self._grid[i][j].age += 1
+                total = 0
+
+                for x in range(-1,2):
+                    for y in range(-1, 2):
+                        total += grid[(i+x)%self._rows][(j+y)%self._columns].value
+                
+                """ grid[i][(j-1)%self._columns].value \
                     + grid[i][(j+1)%self._columns].value + grid[(i-1)%self._rows][j].value + grid[(i+1)%self._rows][j].value \
                     + grid[(i-1)%self._rows][(j-1)%self._columns].value + grid[(i-1)%self._rows][(j+1)%self._columns].value \
-                    + grid[(i+1)%self._rows][(j-1)%self._columns].value + grid[(i+1)%self._rows][(j+1)%self._columns].value
+                    + grid[(i+1)%self._rows][(j-1)%self._columns].value + grid[(i+1)%self._rows][(j+1)%self._columns].value"""
         
         
 
 
                 if grid[i][j].value == 1:
-                    if (total < 2) or (total > 3):
+                    if (total < 2) or (total > 3) or grid[i][j].age >= 10:
                         self._grid[i][j].value = 0
                         self._grid[i][j].color = (0, 0, 0)
+                    elif grid[i][j].age > 7:
+                        self._grid[i][j].color = (255, 0, 0)
                 else:
                     if total == 3:
+                        self._grid[i][j].age = 0
                         self._grid[i][j].value = 1
                         self._grid[i][j].color = (244, 244, 244)
        
@@ -80,12 +92,12 @@ class Board:
 
 clock = pygame.time.Clock()
 running = True
-board = Board(384, 216)
+board = Board(50, 70)
 paused = False
 while running:
 
     if not paused:
-        clock.tick(10)
+        clock.tick(13)
         board.draw_board()
         board.check_status()
     for event in pygame.event.get():
