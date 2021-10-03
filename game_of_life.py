@@ -31,7 +31,7 @@ class Board:
     def draw_board(self):
         for x in range(self._rows):
             for y in range(self._columns):
-                pygame.draw.rect(fenster, self._grid[x][y].color, pygame.Rect(1000 + (10*x), 200 + (10*y), 10, 10))
+                pygame.draw.rect(fenster, self._grid[x][y].color, pygame.Rect((12*x),(12*y), 10, 10))
 
         pygame.display.update()
 
@@ -39,49 +39,44 @@ class Board:
     def _generate_board(self):
         for row in self._grid:
             for column in row:
-                chance_number = randint(0,10)
+                chance_number = randint(0,6)
                 if chance_number == 1:
                     column.color = (244, 244, 244)
                     column.value = 1
 
 
+    def check_cell(self,T, v):
+        total = 0
+        for x in range(-1,2):
+            for y in range(-1, 2):
+                if x == 0 and y == 0:
+                    pass
+                else:
+                    total += T[(v[0]+x)%self._rows][(v[1]+y)%self._columns]
+        return total
+
     def check_status(self):
         
-        grid = self._grid.copy()
+        grid = [[x.value for x in y] for y in self._grid]
         amount_of_neighbours = 0
-
         for i in range(self._rows):
             for j in range(self._columns):
                 
                 if self._grid[i][j].value == 1:
                     self._grid[i][j].age += 1
-                total = 0
-
-                for x in range(-1,2):
-                    for y in range(-1, 2):
-                        total += grid[(i+x)%self._rows][(j+y)%self._columns].value
-                
-                """ grid[i][(j-1)%self._columns].value \
-                    + grid[i][(j+1)%self._columns].value + grid[(i-1)%self._rows][j].value + grid[(i+1)%self._rows][j].value \
-                    + grid[(i-1)%self._rows][(j-1)%self._columns].value + grid[(i-1)%self._rows][(j+1)%self._columns].value \
-                    + grid[(i+1)%self._rows][(j-1)%self._columns].value + grid[(i+1)%self._rows][(j+1)%self._columns].value"""
-        
-        
-
-
-                if grid[i][j].value == 1:
-                    if (total < 2) or (total > 3) or grid[i][j].age >= 10:
+                total = self.check_cell(grid, (i,j))
+                if self._grid[i][j].value == 1:
+                    if (total < 2) or (total > 3) or self._grid[i][j].age >= 20:
                         self._grid[i][j].value = 0
                         self._grid[i][j].color = (0, 0, 0)
-                    elif grid[i][j].age > 7:
+                    elif self._grid[i][j].age > 17:
                         self._grid[i][j].color = (255, 0, 0)
                 else:
                     if total == 3:
                         self._grid[i][j].age = 0
                         self._grid[i][j].value = 1
                         self._grid[i][j].color = (244, 244, 244)
-       
-    
+
   
     
 
@@ -92,7 +87,7 @@ class Board:
 
 clock = pygame.time.Clock()
 running = True
-board = Board(50, 70)
+board = Board(160, 90)
 paused = False
 while running:
 
